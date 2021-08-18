@@ -1,10 +1,10 @@
+import smtplib
+import logging
 import os
 from configparser import ConfigParser
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.image import MIMEImage
-import smtplib
-import logging
 from utils import get_contacts, get_template
 
 
@@ -22,20 +22,24 @@ def main():
     subject = config.get("smtp", "email_subject")
     log_output = "log.txt"
 
-    logging.basicConfig(level=logging.DEBUG,
+    logging.basicConfig(level=logging.INFO,
                         format="%(levelname)s - %(message)s",
                         handlers=[
                             logging.FileHandler(log_output, mode="w"),
                             logging.StreamHandler()
                         ])
 
-    logging.info("Connecting to SMTP server ...")
-
-    smtp_server = smtplib.SMTP(host=smtp_host, port=smtp_port)
+    if not os.path.exists(input_folder) or not os.listdir(input_folder):
+        logging.error("Input folder doesn't exist or empty")
+        return
 
     try:
+        logging.info("Connecting to SMTP server ...")
+
+        smtp_server = smtplib.SMTP(host=smtp_host, port=smtp_port)
         smtp_server.starttls()
         smtp_server.login(smtp_email, smtp_password)
+
         logging.info("Connected to SMTP server")
     except Exception as e:
         logging.error(f"Failed to connect to SMTP server: {e}")

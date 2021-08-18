@@ -1,1 +1,2 @@
 This is email body
+You can use $NAME to insert receiver name
