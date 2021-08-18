@@ -33,6 +33,10 @@ def main():
         logging.error("Input folder doesn't exist or empty")
         return
 
+    if not smtp_email or not smtp_password:
+        logging.error("Email or password empty")
+        return
+
     try:
         logging.info("Connecting to SMTP server ...")
 
@@ -45,16 +49,17 @@ def main():
         logging.error(f"Failed to connect to SMTP server: {e}")
         return
 
-    names, emails = get_contacts(email_list)
+    names, emails, count = get_contacts(email_list)
     email_body_template = get_template(body_template)
 
-    for name, email in zip(names, emails):
-        logging.info(f"Sending email to {name} ({email}) ... ")
+    for line, (name, email) in enumerate(zip(names, emails)):
+        logging.info(
+            f"({line + 1}/{count}) Sending email to {name} ({email}) ... ")
 
         try:
             msg = MIMEMultipart()
 
-            message = email_body_template.substitute(NAME=name.title())
+            message = email_body_template.substitute(NAME=name)
 
             msg['From'] = smtp_email
             msg['To'] = email
@@ -62,12 +67,12 @@ def main():
 
             msg.attach(MIMEText(message, 'plain'))
 
-            with open(f"{input_folder}/{name.title()}.png", 'rb') as fp:
+            with open(f"{input_folder}/{name}.png", 'rb') as fp:
                 img = MIMEImage(fp.read())
                 img.add_header(
                     'Content-Disposition',
                     'attachment',
-                    filename=f"{name.title()}.png")
+                    filename=f"{name}.png")
                 msg.attach(img)
 
             smtp_server.send_message(msg)
@@ -78,6 +83,7 @@ def main():
             logging.error(f"Failed sending email: {e}")
 
     smtp_server.quit()
+    logging.info("Done")
 
 
 if __name__ == '__main__':

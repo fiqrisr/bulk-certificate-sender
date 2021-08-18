@@ -9,7 +9,9 @@ def get_contacts(filename):
         for contact in contacts_file:
             names.append(contact.split(';')[0].title())
             emails.append(contact.split(';')[1].rstrip())
-    return names, emails
+
+    count = len(names)
+    return names, emails, count
 
 
 def get_template(filename):

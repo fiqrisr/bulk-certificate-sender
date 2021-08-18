@@ -1,2 +1,3 @@
-first person;first@test.com
-second person;second@test.com
+Isobel Cooke;isobel@mailpoof.com
+Muhammed Finley;finley@mailpoof.com
+Danny Preston;danny@mailpoof.com
